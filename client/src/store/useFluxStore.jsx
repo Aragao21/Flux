@@ -53,6 +53,17 @@ const useFluxStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+  async contestTransaction(id) {
+    set({ loading: true });
+    try {
+      const res = await fetch(`${API_URL}/transactions/${id}/contest`, { method: 'POST' });
+      const data = await res.json();
+      await get().refreshData();
+      return data;
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
 
 export default useFluxStore;

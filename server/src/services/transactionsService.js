@@ -5,6 +5,10 @@ const categoryRules = {
   PIX_RECEBIDO: { label: 'Recebimento', color: '#16a34a', icon: '⬇' },
   RECARGA: { label: 'Telefone', color: '#f97316', icon: '📱' },
   PAGAMENTO: { label: 'Contas', color: '#0ea5e9', icon: '🧾' },
+  COMPRA_CASHBACK: { label: 'Compras', color: '#8b5cf6', icon: '🛍️' },
+  CASHBACK_BONUS: { label: 'Cashback', color: '#16a34a', icon: '💸' },
+  SEGURO: { label: 'Seguro', color: '#0f172a', icon: '🛡️' },
+  EMPRESTIMO: { label: 'Crédito', color: '#10b981', icon: '💳' },
 };
 
 const directionFactor = {
@@ -32,6 +36,15 @@ function persistTransaction({ type, direction, amount, party, description }) {
         });
       }
     );
+  });
+}
+
+function contestTransaction(id) {
+  return new Promise((resolve, reject) => {
+    db.run('UPDATE transactions SET contested = 1 WHERE id = ?', [id], function (err) {
+      if (err) return reject(err);
+      resolve({ updated: this.changes });
+    });
   });
 }
 
@@ -66,4 +79,4 @@ function summary() {
   });
 }
 
-module.exports = { persistTransaction, listTransactions, summary, categoryRules };
+module.exports = { persistTransaction, listTransactions, summary, categoryRules, contestTransaction };

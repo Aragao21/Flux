@@ -6,6 +6,7 @@ const links = [
   { to: '/pix', label: 'PIX' },
   { to: '/pagamentos', label: 'Pagamentos' },
   { to: '/recarga', label: 'Recarga' },
+  { to: '/servicos', label: 'Serviços' },
   { to: '/extrato', label: 'Extrato' },
 ];
 

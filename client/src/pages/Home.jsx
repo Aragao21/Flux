@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import BalanceCard from '../components/BalanceCard';
 import QuickActionCard from '../components/QuickActionCard';
@@ -14,6 +14,14 @@ export default function Home() {
 
   const income = transactions.filter((t) => t.direction === 'credit').reduce((acc, t) => acc + Number(t.amount), 0);
   const outcome = transactions.filter((t) => t.direction === 'debit').reduce((acc, t) => acc + Number(t.amount), 0);
+
+  const suggestedAction = useMemo(() => {
+    const last = transactions[0];
+    if (!last) return 'Explore serviços com cashback para maximizar benefícios.';
+    if (last.category === 'Transferência') return 'Experimente contestar lançamentos PIX direto pelo extrato se notar algo estranho.';
+    if (last.category === 'Contas') return 'Agende seus pagamentos simulados para manter o histórico organizado.';
+    return 'Use atalhos para simular novas ações e ver o extrato inteligente em tempo real.';
+  }, [transactions]);
 
   return (
     <div className="space-y-6">
@@ -34,13 +42,14 @@ export default function Home() {
             <Link to="/recarga" className="bg-white/10 rounded-lg px-3 py-2 hover:bg-white/20">
               Recarga
             </Link>
+            <Link to="/servicos" className="bg-white/10 rounded-lg px-3 py-2 hover:bg-white/20">
+              Serviços
+            </Link>
             <Link to="/extrato" className="bg-white/10 rounded-lg px-3 py-2 hover:bg-white/20">
               Extrato
             </Link>
           </div>
-          <p className="text-xs text-gray-300 leading-relaxed">
-            Tudo é simulado, mas o fluxo é real: cada ação registra um lançamento categorizado automaticamente.
-          </p>
+          <p className="text-xs text-gray-300 leading-relaxed">{suggestedAction}</p>
         </div>
       </div>
 
@@ -48,6 +57,7 @@ export default function Home() {
         <QuickActionCard title="PIX" description="Envie ou receba em instantes" to="/pix" accent="#ED1C24" />
         <QuickActionCard title="Pagamentos" description="Boletos e cobranças" to="/pagamentos" accent="#0ea5e9" />
         <QuickActionCard title="Recarga" description="Recarregue qualquer operadora" to="/recarga" accent="#f97316" />
+        <QuickActionCard title="Serviços" description="Cashback, seguro e crédito" to="/servicos" accent="#16a34a" />
       </div>
 
       <div className="space-y-3">

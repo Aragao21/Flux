@@ -6,6 +6,7 @@ import Pix from './pages/Pix';
 import Payments from './pages/Payments';
 import Recharge from './pages/Recharge';
 import Statement from './pages/Statement';
+import Services from './pages/Services';
 import useFluxStore from './store/useFluxStore';
 import NavBar from './components/NavBar';
 
@@ -63,6 +64,14 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Recharge />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/servicos"
+              element={
+                <ProtectedRoute>
+                  <Services />
                 </ProtectedRoute>
               }
             />
