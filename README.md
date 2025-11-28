@@ -24,10 +24,9 @@ Credenciais de acesso:
 
 ## Funcionalidades
 
-- PIX (envio direto, sem QR) com comprovante e registro imediato no extrato.
-- Pagamento de contas, recarga de celular e serviços (cashback, seguro e empréstimo) com lançamentos categorizados e etiquetas.
+- PIX, Pagamento de contas, recarga de celular e serviços (cashback, seguro e empréstimo) com lançamentos categorizados e etiquetas, com comprovante e registro imediato no extrato.
 - Extrato inteligente com cores/ícones e gráfico por categoria, filtrado pelo usuário logado.
-- Etiquetas personalizadas: crie cores próprias, selecione-as em PIX, pagamentos e serviços e filtre o extrato por tag.
+- Etiquetas personalizadas: crie cores próprias, selecione-as em PIX, pagamentos e outros serviços e filtre o extrato por tag.
 - Campos monetários com máscara automática (vírgula fixa para centavos) para evitar erros de digitação.
 - UI inspirada na paleta Claro (vermelho #ED1C24) mantendo a identidade Flux.
 - Perfil editável (nome, email, senha), saudação personalizada e logout visível.
