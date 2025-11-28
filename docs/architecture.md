@@ -1,15 +1,28 @@
+
 # Arquitetura Flux
 
 ## Visão geral
-- **Front-end**: React (Vite) com Tailwind e Zustand para estado global. Comunicação com `/api` via fetch.
-- **Back-end**: Node.js + Express. Rotas REST para PIX, pagamentos, recargas, serviços, perfil e login controlado por usuário.
-- **Banco**: SQLite local em `data/flux.db` com tabelas `users` e `transactions` (com `user_id`).
+- **Front-end:** React (Vite) + Tailwind + Zustand. Deploy recomendado: Vercel (diretório `client/`).
+- **Back-end:** Node.js + Express + SQLite. Deploy recomendado: Render, Railway ou outra plataforma Node (diretório `server/`).
+- **Banco:** SQLite local (`server/data/flux.db`).
+
+## Deploy em nuvem
+- **Frontend:**  
+  - Suba o projeto para o GitHub.
+  - No Vercel, selecione o repositório e a pasta `client/`.
+  - Configure o build (`npm run build`) e output (`dist`).
+  - Configure a variável de ambiente `VITE_API_URL` apontando para a URL do backend hospedado.
+- **Backend:**  
+  - Suba a pasta `server/` em Render, Railway ou similar.
+  - Configure o start (`npm run start`) e mantenha o banco SQLite persistente.
+  - Exporte a URL do backend (ex: `https://flux-backend.onrender.com`).
+
 
 ## Diagrama de componentes (Mermaid)
 ```mermaid
 graph LR
   UI[Front-end React/Tailwind] -- fetch --> API[Express API]
-  UI -- proxy 5173/4000 --> API
+  UI -- Vercel --> API
   API -- SQLite driver --> DB[(flux.db)]
   subgraph Client
     UI
@@ -19,6 +32,7 @@ graph LR
     DB
   end
 ```
+
 
 ## Diagrama UML de casos de uso
 ```mermaid
