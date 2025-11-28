@@ -67,7 +67,6 @@ export default function Pix() {
             <ul className="text-xs text-soft list-disc list-inside space-y-1">
               <li>Saída categorizada como "Transferência"</li>
               <li>Comprovante oficial com prefixo FLUX</li>
-              <li>Contestação rápida disponível no extrato</li>
             </ul>
           </div>
         </div>
@@ -76,8 +75,8 @@ export default function Pix() {
       <div className="card p-6 bg-gradient-to-b from-white to-red-50 space-y-4">
         <h3 className="text-lg font-semibold">Dicas para um PIX sem fricção</h3>
         <p className="text-sm text-soft">
-          Confirme o destinatário, valide o valor e use a máscara automática para manter centavos alinhados. Caso algo saia do
-          esperado, acione "Contestar PIX" direto no extrato.
+          Confirme o destinatário, valide o valor e use a máscara automática para manter centavos alinhados. Após o envio, o
+          comprovante fica disponível no extrato para consulta imediata.
         </p>
         <div className="bg-white border border-gray-200 rounded-xl p-3 text-sm space-y-1">
           <p className="font-semibold text-ink">Resumo da transferência</p>

@@ -4,7 +4,7 @@ import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInpu
 import useFluxStore from '../store/useFluxStore';
 
 export default function Services() {
-  const { post, loading, transactions } = useFluxStore();
+  const { post, loading, transactions, refreshData } = useFluxStore();
   const [purchase, setPurchase] = useState({ amount: '0,00', merchant: '' });
   const [insurance, setInsurance] = useState({ amount: '0,00', provider: '' });
   const [loan, setLoan] = useState({ amount: '0,00', description: '' });
@@ -24,7 +24,10 @@ export default function Services() {
   const handleSubmit = async (path, payload, onSuccess) => {
     setMessage('');
     const res = await post(path, payload);
-    setMessage(res.message || 'Operação concluída e registrada no extrato.');
+    const feedback = res.message || 'Operação concluída e registrada no extrato.';
+    setMessage(feedback);
+    await refreshData();
+    alert(feedback);
     if (onSuccess) onSuccess();
   };
 
