@@ -1,30 +1,30 @@
-# Arquitetura Flux
+# Arquitetura Técnica — Flux
 
-## Visão geral
+## Visão Geral
 
-- **Front-end:** React (Vite) + Tailwind + Zustand. Deploy recomendado: Vercel (diretório `client/`).
-- **Back-end:** Node.js + Express + SQLite. Deploy recomendado: Render, Railway ou outra plataforma Node (diretório `server/`).
-- **Banco:** SQLite local (`server/data/flux.db`).
+- **Front-end:** SPA em React (Vite), estilização com Tailwind CSS, gerenciamento de estado global via Zustand. Localização: `client/`.
+- **Back-end:** API RESTful em Node.js (Express), persistência em SQLite. Localização: `server/`.
+- **Banco de Dados:** SQLite local (`server/data/flux.db`), migrado e populado automaticamente.
 
-## Como rodar localmente
+## Execução Local
 
-1. Instale as dependências em cada pasta:
+1. Instale as dependências:
 
 - `cd server && npm install`
 - `cd ../client && npm install`
 
-2. Inicie o backend:
+2. Inicie o backend (porta 4000):
 
-- `cd server && npm run start` (porta 4000)
+- `cd server && npm run start`
 
-3. Em outro terminal, inicie o frontend:
+3. Em outro terminal, inicie o frontend (porta 5173):
 
-- `cd client && npm run dev` (porta 5173, proxy para a API)
+- `cd client && npm run dev`
 
-4. Acesse `http://localhost:5173` no navegador.
+4. Acesse `http://localhost:5173`.
 5. O banco SQLite será criado automaticamente em `server/data/flux.db`.
 
-## Diagrama de componentes (Mermaid)
+## Diagrama de Componentes
 
 ```mermaid
 graph LR
@@ -39,7 +39,7 @@ graph LR
   end
 ```
 
-## Diagrama de casos de uso (compatível GitHub)
+## Diagrama de Casos de Uso
 
 ```mermaid
 flowchart TD
@@ -64,7 +64,7 @@ flowchart TD
   Usuario --> PersonalizarCategorias
 ```
 
-## Modelo E-R simplificado
+## Modelo Entidade-Relacionamento (E-R)
 
 ```mermaid
 erDiagram
@@ -100,29 +100,42 @@ erDiagram
   }
 ```
 
-## Extrato Inteligente
+## Extrato Inteligente — Funcionalidades
 
-O Extrato Inteligente do Flux oferece:
-
-- **Filtros avançados:** por tipo de transação, categoria e período.
-- **Gráficos dinâmicos:** distribuição de gastos por categoria e tipo, com cores e ícones personalizados.
-- **Comprovantes digitais:** cada transação gera comprovante detalhado, com opção de compartilhamento nativo (Web Share API) ou cópia para área de transferência.
-- **Busca e navegação responsiva:** resultados instantâneos, abas para transações atuais e futuras.
+- **Filtros:**
+  - Tipo de transação (`type`): PIX, Pagamento, Recarga, Compra, Seguro, Empréstimo.
+  - Categoria (`category_id`): customizável por usuário.
+  - Período (`created_at`): seleção de datas.
+- **Gráficos:**
+  - Distribuição de valores por categoria e tipo (Chart.js via react-chartjs-2).
+  - Cores e ícones definidos por categoria.
+- **Comprovantes:**
+  - Geração automática para cada transação, com dados completos (ID, valor, tipo, data, conta, status).
+  - Compartilhamento via Web Share API ou cópia para área de transferência.
+- **Navegação:**
+  - Abas para transações atuais e futuras (baseado em `created_at`).
+  - Busca instantânea e responsiva.
 
 ## Camada de Personalização
 
-- **Categorias customizáveis:** usuário pode criar, editar e excluir categorias, escolhendo cor e ícone.
-- **Engajamento:** a personalização estimula o usuário a categorizar suas transações, tornando o extrato mais visual, útil e interativo.
-- **Integração com filtros e gráficos:** toda personalização é refletida nos filtros, gráficos e comprovantes, promovendo senso de controle e pertencimento.
+- **Categorias customizáveis:**
+  - CRUD completo de categorias (nome, cor, ícone) por usuário.
+  - Integração direta com filtros, gráficos e comprovantes.
+- **Engajamento:**
+  - Incentivo à categorização para melhor visualização e controle financeiro.
 
-## UI/UX
+## UI/UX — Detalhes Técnicos
 
-- **Design responsivo:** interface adaptada para web, tablet e celular, com grid fluido e componentes reativos.
-- **Acessibilidade:** contraste alto, fontes legíveis (Inter), botões grandes e feedback visual em todas as ações.
-- **Visual atrativo:** paleta clara, destaque para cor primária (#ED1C24), gráficos animados, ícones modernos e navegação intuitiva.
-- **Experiência mobile-first:** menus, cards e botões otimizados para toque, sem perder recursos avançados no desktop.
+- **Responsividade:**
+  - Layout fluido (Tailwind) para web, tablet e mobile.
+  - Componentes adaptativos e navegação mobile-first.
+- **Acessibilidade:**
+  - Contraste alto, fontes Inter, navegação por teclado e feedback visual.
+- **Visual:**
+  - Paleta clara, cor primária #ED1C24, gráficos animados, ícones SVG.
+  - Botões e cards com espaçamento generoso e foco em usabilidade.
 
-## Fluxo de categorização
+## Fluxo de Categorização (Regras de Negócio)
 
 - PIX enviado → categoria **Transferência** (saída)
 - Recarga → **Telefone** (saída)
@@ -131,21 +144,23 @@ O Extrato Inteligente do Flux oferece:
 - Seguro contratado → **Seguros** (saída)
 - Empréstimo contratado → **Empréstimos** (entrada)
 
-## Rotas principais
+## Endpoints REST — API
 
-- `POST /api/auth/login`
-- `POST /api/pix/send`
-- `POST /api/payments`
-- `POST /api/recharges`
-- `POST /api/services/purchase`
-- `POST /api/services/insurance`
-- `POST /api/services/loan`
-- `GET /api/transactions`
-- `GET /api/summary`
-- `GET /api/users/:id`
-- `PUT /api/users/:id`
+- `POST /api/auth/login` — autenticação de usuário
+- `POST /api/pix/send` — envio de PIX
+- `POST /api/payments` — pagamento de contas
+- `POST /api/recharges` — recarga de celular
+- `POST /api/services/purchase` — compras com cashback
+- `POST /api/services/insurance` — contratação de seguro
+- `POST /api/services/loan` — contratação de empréstimo
+- `GET /api/transactions` — listagem de transações
+- `GET /api/summary` — resumo financeiro
+- `GET /api/users/:id` — dados do usuário
+- `PUT /api/users/:id` — atualização de perfil
 
-## Convenções visuais
+## Convenções Visuais
 
-- Primária: vermelho `#ED1C24`.
-- Fundo claro, alto contraste, botões arredondados e tipografia Inter.
+- Cor primária: vermelho `#ED1C24`
+- Fundo claro, alto contraste
+- Botões arredondados
+- Tipografia Inter
