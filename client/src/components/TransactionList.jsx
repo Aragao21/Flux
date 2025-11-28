@@ -24,7 +24,15 @@ export default function TransactionList({ transactions }) {
               </div>
               <div>
                 <p className="font-semibold text-ink">{tx.description || tx.category}</p>
-                <p className="text-xs text-soft">{tx.category} · {new Date(tx.created_at).toLocaleString('pt-BR')}</p>
+                <p className="text-xs text-soft flex items-center gap-2 flex-wrap">
+                  <span>{tx.category}</span>
+                  {tx.tag && (
+                    <span className="px-2 py-0.5 rounded-full text-[11px] bg-gray-100 border border-gray-200 text-ink">
+                      {tx.tag}
+                    </span>
+                  )}
+                  <span>{new Date(tx.created_at).toLocaleString('pt-BR')}</span>
+                </p>
                 {tx.contested && <p className="text-xs text-amber-700">Contestação registrada</p>}
               </div>
             </div>
@@ -72,6 +80,10 @@ export default function TransactionList({ transactions }) {
               <div className="flex items-center justify-between">
                 <span className="text-soft">Direção</span>
                 <span className="font-semibold capitalize">{selected.direction === 'debit' ? 'Débito' : 'Crédito'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-soft">Etiqueta</span>
+                <span className="font-semibold">{selected.tag || selected.category}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-soft">Conta/Chave</span>

@@ -3,7 +3,7 @@ const { listTransactions, summary, categoryRules, contestTransaction } = require
 async function getTransactions(req, res) {
   try {
     const userId = Number(req.query.userId) || 1;
-    const transactions = await listTransactions(userId);
+    const transactions = await listTransactions(userId, req.query.tag);
     res.json({ transactions });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao listar transações', error: error.message });
@@ -13,7 +13,7 @@ async function getTransactions(req, res) {
 async function getSummary(req, res) {
   try {
     const userId = Number(req.query.userId) || 1;
-    const data = await summary(userId);
+    const data = await summary(userId, req.query.tag);
     res.json({ ...data, categoryRules });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao obter resumo', error: error.message });

@@ -35,9 +35,9 @@ export default function Home() {
         <QuickActionCard title="PIX" description="Envio imediato" to="/pix" accent="#ED1C24" />
         <QuickActionCard title="Pagamentos" description="Boletos e cobranças" to="/pagamentos" accent="#0ea5e9" />
         <QuickActionCard title="Recarga" description="Qualquer operadora" to="/recarga" accent="#f97316" />
-        <QuickActionCard title="Compras com cashback" description="5% de volta" to="/servicos#cashback" accent="#8b5cf6" />
-        <QuickActionCard title="Seguro" description="Cobertura ativa" to="/servicos#seguro" accent="#0f172a" />
-        <QuickActionCard title="Empréstimo" description="Crédito imediato" to="/servicos#emprestimo" accent="#10b981" />
+        <QuickActionCard title="Compras com cashback" description="5% de volta" to="/servicos/compras" accent="#8b5cf6" />
+        <QuickActionCard title="Seguro" description="Cobertura ativa" to="/servicos/seguro" accent="#0f172a" />
+        <QuickActionCard title="Empréstimo" description="Crédito imediato" to="/servicos/emprestimo" accent="#10b981" />
       </div>
 
       <div className="space-y-3">

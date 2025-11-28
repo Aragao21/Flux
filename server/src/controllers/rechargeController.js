@@ -12,6 +12,7 @@ async function recharge(req, res) {
       party: `${phone} ${operator || ''}`.trim(),
       description: 'Recarga de celular',
       userId,
+      tag: 'Recarga',
     });
     res.json({ message: 'Recarga concluída.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
   } catch (error) {

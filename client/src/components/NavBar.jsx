@@ -7,6 +7,9 @@ const links = [
   { to: '/pagamentos', label: 'Pagamentos' },
   { to: '/recarga', label: 'Recarga' },
   { to: '/servicos', label: 'Serviços' },
+  { to: '/servicos/compras', label: 'Compras + cashback' },
+  { to: '/servicos/seguro', label: 'Seguro' },
+  { to: '/servicos/emprestimo', label: 'Empréstimo' },
   { to: '/extrato', label: 'Extrato' },
   { to: '/perfil', label: 'Perfil' },
 ];

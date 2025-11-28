@@ -8,6 +8,9 @@ import Recharge from './pages/Recharge';
 import Statement from './pages/Statement';
 import Services from './pages/Services';
 import Profile from './pages/Profile';
+import PurchaseService from './pages/PurchaseService';
+import InsuranceService from './pages/InsuranceService';
+import LoanService from './pages/LoanService';
 import useFluxStore from './store/useFluxStore';
 import NavBar from './components/NavBar';
 
@@ -110,6 +113,30 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Services />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/servicos/compras"
+              element={
+                <ProtectedRoute>
+                  <PurchaseService />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/servicos/seguro"
+              element={
+                <ProtectedRoute>
+                  <InsuranceService />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/servicos/emprestimo"
+              element={
+                <ProtectedRoute>
+                  <LoanService />
                 </ProtectedRoute>
               }
             />

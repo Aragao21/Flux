@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useFluxStore from '../store/useFluxStore';
 import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
 
 export default function Payments() {
-  const { post, loading } = useFluxStore();
-  const [form, setForm] = useState({ amount: '0,00', barcode: '', description: '' });
+  const { post, loading, tags, refreshData } = useFluxStore();
+  const [form, setForm] = useState({ amount: '0,00', barcode: '', description: '', tag: 'Contas' });
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -15,16 +19,28 @@ export default function Payments() {
     setMessage('');
     const res = await post('/payments', { ...form, amount: numericAmount });
     setMessage(res.message);
-    setForm({ amount: '0,00', barcode: '', description: '' });
+    setForm({ amount: '0,00', barcode: '', description: '', tag: form.tag });
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-4">
+    <div className="max-w-3xl">
       <form className="card p-6 space-y-4" onSubmit={handleSubmit}>
         <h2 className="section-title">Pagamento de contas</h2>
-        <div>
-          <label className="text-sm text-soft">Código de barras</label>
-          <input name="barcode" className="input-base mt-1" value={form.barcode} onChange={handleChange} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm text-soft">Código de barras</label>
+            <input name="barcode" className="input-base mt-1" value={form.barcode} onChange={handleChange} />
+          </div>
+          <div>
+            <label className="text-sm text-soft">Etiqueta</label>
+            <select name="tag" className="input-base mt-1" value={form.tag} onChange={handleChange}>
+              {['Contas', ...new Set(tags.map((t) => t.name))].map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CurrencyInput
@@ -48,18 +64,6 @@ export default function Payments() {
         )}
         <p className="text-xs text-soft">Lançamento classificado automaticamente como "Contas".</p>
       </form>
-      <div className="card p-6 bg-ink text-white space-y-3">
-        <h3 className="text-lg font-semibold">Fluxo guiado</h3>
-        <p className="text-sm text-gray-200">
-          O pagamento cria uma saída no saldo e registra o código informado. Use descrições curtas para identificar rápido no
-          extrato.
-        </p>
-        <div className="bg-white/10 p-4 rounded-xl text-sm text-gray-100 space-y-1">
-          <p>Exemplo:</p>
-          <p>Valor: 189.90</p>
-          <p>Barras: 34191.79001 01043.510047 91020.150008 5 99680000018990</p>
-        </div>
-      </div>
     </div>
   );
 }

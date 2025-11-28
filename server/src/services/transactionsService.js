@@ -16,15 +16,16 @@ const directionFactor = {
   debit: -1,
 };
 
-function persistTransaction({ type, direction, amount, party, description, userId }) {
+function persistTransaction({ type, direction, amount, party, description, userId, tag }) {
   const targetUserId = Number(userId) || 1;
   return new Promise((resolve, reject) => {
     const rule = categoryRules[type];
     const category = rule ? rule.label : 'Outros';
+    const resolvedTag = tag || category;
 
     db.run(
-      `INSERT INTO transactions (type, direction, amount, party, description, category, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [type, direction, amount, party, description, category, targetUserId],
+      `INSERT INTO transactions (type, direction, amount, party, description, category, tag, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [type, direction, amount, party, description, category, resolvedTag, targetUserId],
       function (err) {
         if (err) return reject(err);
         const id = this.lastID;
@@ -49,9 +50,17 @@ function contestTransaction(id) {
   });
 }
 
-function listTransactions(userId = 1) {
+function listTransactions(userId = 1, tagFilter) {
   return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM transactions WHERE user_id = ? ORDER BY datetime(created_at) DESC', [userId], (err, rows) => {
+    const params = [userId];
+    let query = 'SELECT * FROM transactions WHERE user_id = ?';
+    if (tagFilter) {
+      query += ' AND tag = ?';
+      params.push(tagFilter);
+    }
+    query += ' ORDER BY datetime(created_at) DESC';
+
+    db.all(query, params, (err, rows) => {
       if (err) return reject(err);
       const withRules = rows.map((row) => ({
         ...row,
@@ -62,13 +71,20 @@ function listTransactions(userId = 1) {
   });
 }
 
-function summary(userId = 1) {
+function summary(userId = 1, tagFilter) {
   return new Promise((resolve, reject) => {
-    db.all('SELECT category, direction, amount FROM transactions WHERE user_id = ?', [userId], (err, rows) => {
+    const params = [userId];
+    let query = 'SELECT category, direction, amount, tag FROM transactions WHERE user_id = ?';
+    if (tagFilter) {
+      query += ' AND tag = ?';
+      params.push(tagFilter);
+    }
+
+    db.all(query, params, (err, rows) => {
       if (err) return reject(err);
       const totals = {};
       rows.forEach((row) => {
-        const key = row.category;
+        const key = row.tag || row.category;
         const sign = directionFactor[row.direction] || 1;
         totals[key] = (totals[key] || 0) + sign * row.amount;
       });

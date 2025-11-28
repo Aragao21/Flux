@@ -6,6 +6,7 @@ const { getTransactions, getSummary, contest } = require('../controllers/transac
 const { login } = require('../controllers/authController');
 const { purchase, insurance, loan } = require('../controllers/servicesController');
 const { getProfile, updateProfile } = require('../controllers/usersController');
+const { listTags, createTag } = require('../controllers/tagsController');
 
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.post('/services/loan', loan);
 router.get('/transactions', getTransactions);
 router.get('/summary', getSummary);
 router.post('/transactions/:id/contest', contest);
+router.get('/tags', listTags);
+router.post('/tags', createTag);
 router.get('/users/:id', getProfile);
 router.put('/users/:id', updateProfile);
 

@@ -32,6 +32,7 @@ db.serialize(() => {
       party TEXT,
       description TEXT,
       category TEXT NOT NULL,
+      tag TEXT,
       contested INTEGER DEFAULT 0,
       user_id INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -42,6 +43,7 @@ db.serialize(() => {
     if (err) return;
     const hasContested = rows.some((r) => r.name === 'contested');
     const hasUserId = rows.some((r) => r.name === 'user_id');
+    const hasTag = rows.some((r) => r.name === 'tag');
     if (!hasContested) {
       db.run('ALTER TABLE transactions ADD COLUMN contested INTEGER DEFAULT 0');
     }
@@ -49,7 +51,20 @@ db.serialize(() => {
       db.run('ALTER TABLE transactions ADD COLUMN user_id INTEGER DEFAULT 1');
       db.run('UPDATE transactions SET user_id = 1 WHERE user_id IS NULL');
     }
+    if (!hasTag) {
+      db.run('ALTER TABLE transactions ADD COLUMN tag TEXT');
+    }
   });
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS tags (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      color TEXT DEFAULT '#ED1C24',
+      user_id INTEGER DEFAULT 1,
+      UNIQUE(name, user_id)
+    )
+  `);
 
   db.all("PRAGMA table_info('users')", (err, rows) => {
     if (err) return;
@@ -77,6 +92,27 @@ db.serialize(() => {
   stmt.finalize();
   db.run("UPDATE users SET role = 'admin' WHERE username = 'flux'");
   db.run("UPDATE users SET email = COALESCE(email, username || '@flux.app')");
+
+  const defaultTags = [
+    { name: 'Transferência', color: '#ED1C24' },
+    { name: 'Recebimento', color: '#16a34a' },
+    { name: 'Contas', color: '#0ea5e9' },
+    { name: 'Telefone', color: '#f97316' },
+    { name: 'Compras', color: '#8b5cf6' },
+    { name: 'Cashback', color: '#16a34a' },
+    { name: 'Seguro', color: '#0f172a' },
+    { name: 'Empréstimo', color: '#10b981' },
+    { name: 'Recarga', color: '#f97316' },
+  ];
+
+  db.all('SELECT id FROM users', (err, users) => {
+    if (err) return;
+    users.forEach((user) => {
+      const tagStmt = db.prepare('INSERT OR IGNORE INTO tags (name, color, user_id) VALUES (?, ?, ?)');
+      defaultTags.forEach((tag) => tagStmt.run(tag.name, tag.color, user.id));
+      tagStmt.finalize();
+    });
+  });
 });
 
 module.exports = db;

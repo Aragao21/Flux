@@ -2,7 +2,7 @@ const { persistTransaction } = require('../services/transactionsService');
 
 async function purchase(req, res) {
   try {
-    const { amount, merchant, userId: rawUserId } = req.body;
+    const { amount, merchant, userId: rawUserId, tag } = req.body;
     const userId = Number(rawUserId) || 1;
     if (!amount) return res.status(400).json({ message: 'Informe o valor da compra.' });
     await persistTransaction({
@@ -12,6 +12,7 @@ async function purchase(req, res) {
       party: merchant || 'Loja Flux',
       description: 'Compra com cashback',
       userId,
+      tag: tag || 'Compras',
     });
     const cashbackTx = await persistTransaction({
       type: 'CASHBACK_BONUS',
@@ -20,6 +21,7 @@ async function purchase(req, res) {
       party: 'Cashback Flux',
       description: 'Bônus 5%',
       userId,
+      tag: 'Cashback',
     });
     res.json({ message: 'Compra registrada com cashback creditado.', balance: cashbackTx.newBalance });
   } catch (error) {
@@ -29,7 +31,7 @@ async function purchase(req, res) {
 
 async function insurance(req, res) {
   try {
-    const { amount, provider, userId: rawUserId } = req.body;
+    const { amount, provider, userId: rawUserId, tag } = req.body;
     const userId = Number(rawUserId) || 1;
     if (!amount) return res.status(400).json({ message: 'Informe o valor do seguro.' });
     const result = await persistTransaction({
@@ -39,6 +41,7 @@ async function insurance(req, res) {
       party: provider || 'Seguro Flux',
       description: 'Assinatura de seguro',
       userId,
+      tag: tag || 'Seguro',
     });
     res.json({ message: 'Seguro ativado com sucesso.', balance: result.newBalance });
   } catch (error) {
@@ -48,7 +51,7 @@ async function insurance(req, res) {
 
 async function loan(req, res) {
   try {
-    const { amount, description, userId: rawUserId } = req.body;
+    const { amount, description, userId: rawUserId, tag } = req.body;
     const userId = Number(rawUserId) || 1;
     if (!amount) return res.status(400).json({ message: 'Informe o valor do empréstimo.' });
     const result = await persistTransaction({
@@ -58,6 +61,7 @@ async function loan(req, res) {
       party: 'Linha Flux',
       description: description || 'Crédito liberado',
       userId,
+      tag: tag || 'Empréstimo',
     });
     res.json({ message: 'Empréstimo liberado em conta.', balance: result.newBalance });
   } catch (error) {

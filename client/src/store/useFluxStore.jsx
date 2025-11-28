@@ -7,6 +7,8 @@ const useFluxStore = create((set, get) => ({
   balance: 0,
   transactions: [],
   totals: {},
+  tags: [],
+  tagFilter: 'Todas',
   loading: false,
   async login(username, password) {
     set({ loading: true });
@@ -28,16 +30,22 @@ const useFluxStore = create((set, get) => ({
   async refreshData(userIdOverride) {
     const activeUserId = userIdOverride || get().user?.id;
     if (!activeUserId) return;
-    const [txRes, summaryRes] = await Promise.all([
-      fetch(`${API_URL}/transactions?userId=${activeUserId}`),
-      fetch(`${API_URL}/summary?userId=${activeUserId}`),
+    const tagFilter = get().tagFilter;
+    const tagQuery = tagFilter && tagFilter !== 'Todas' ? `&tag=${encodeURIComponent(tagFilter)}` : '';
+
+    const [txRes, summaryRes, tagsRes] = await Promise.all([
+      fetch(`${API_URL}/transactions?userId=${activeUserId}${tagQuery}`),
+      fetch(`${API_URL}/summary?userId=${activeUserId}${tagQuery}`),
+      fetch(`${API_URL}/tags?userId=${activeUserId}`),
     ]);
     const txData = await txRes.json();
     const summaryData = await summaryRes.json();
+    const tagsData = await tagsRes.json();
     set({
       transactions: txData.transactions || [],
       balance: summaryData.balance ?? 0,
       totals: summaryData.totals || {},
+      tags: tagsData.tags || [],
     });
   },
   async post(endpoint, payload) {
@@ -92,8 +100,26 @@ const useFluxStore = create((set, get) => ({
     const data = await res.json();
     set({ user: data.user, balance: data.user.balance ?? get().balance });
   },
+  async createTag(tag) {
+    const activeUserId = get().user?.id;
+    if (!activeUserId) return;
+    set({ loading: true });
+    try {
+      await fetch(`${API_URL}/tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...tag, userId: activeUserId }),
+      });
+      await get().refreshData();
+    } finally {
+      set({ loading: false });
+    }
+  },
+  setTagFilter(tag) {
+    set({ tagFilter: tag || 'Todas' });
+  },
   logout() {
-    set({ user: null, transactions: [], totals: {}, balance: 0 });
+    set({ user: null, transactions: [], totals: {}, balance: 0, tags: [], tagFilter: 'Todas' });
   },
 }));
 
