@@ -1,10 +1,11 @@
-const { persistTransaction } = require('../services/transactionsService');
+const { persistTransaction } = require('../services/transactionsService')
 
 async function payBill(req, res) {
   try {
-    const { amount, barcode, description, userId: rawUserId, tag } = req.body;
-    const userId = Number(rawUserId) || 1;
-    if (!amount || !barcode) return res.status(400).json({ message: 'Valor e código de barras são obrigatórios.' });
+    const { amount, barcode, description, userId: rawUserId, tag, categoryId } = req.body
+    const userId = Number(rawUserId) || 1
+    if (!amount || !barcode)
+      return res.status(400).json({ message: 'Valor e código de barras são obrigatórios.' })
     const result = await persistTransaction({
       type: 'PAGAMENTO',
       direction: 'debit',
@@ -13,11 +14,16 @@ async function payBill(req, res) {
       description: description || 'Pagamento de conta',
       userId,
       tag: tag || 'Contas',
-    });
-    res.json({ message: 'Pagamento registrado com sucesso.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
+      categoryId: categoryId ? Number(categoryId) : null,
+    })
+    res.json({
+      message: 'Pagamento registrado com sucesso.',
+      receipt: `FLUX-${Date.now()}`,
+      balance: result.newBalance,
+    })
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao registrar pagamento', error: error.message });
+    res.status(500).json({ message: 'Erro ao registrar pagamento', error: error.message })
   }
 }
 
-module.exports = { payBill };
+module.exports = { payBill }

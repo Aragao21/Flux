@@ -1,26 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import useFluxStore from '../store/useFluxStore';
-import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
+import React, { useEffect, useState } from 'react'
+import useFluxStore from '../store/useFluxStore'
+import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput'
 
 export default function Payments() {
-  const { post, loading, tags, refreshData } = useFluxStore();
-  const [form, setForm] = useState({ amount: '0,00', barcode: '', description: '', tag: 'Contas' });
-  const [message, setMessage] = useState('');
+  const { post, loading, tags, categories, refreshData } = useFluxStore()
+  const [form, setForm] = useState({
+    amount: '0,00',
+    barcode: '',
+    description: '',
+    tag: 'Contas',
+    categoryId: '',
+  })
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    refreshData()
+  }, [refreshData])
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const numericAmount = parseCurrencyToNumber(form.amount);
-    setMessage('');
-    const res = await post('/payments', { ...form, amount: numericAmount });
-    setMessage(res.message);
-    setForm({ amount: '0,00', barcode: '', description: '', tag: form.tag });
-  };
+    e.preventDefault()
+    const numericAmount = parseCurrencyToNumber(form.amount)
+    setMessage('')
+    const res = await post('/payments', {
+      ...form,
+      amount: numericAmount,
+      categoryId: form.categoryId ? Number(form.categoryId) : undefined,
+    })
+    setMessage(res.message)
+    setForm({
+      amount: '0,00',
+      barcode: '',
+      description: '',
+      tag: form.tag,
+      categoryId: form.categoryId,
+    })
+  }
 
   return (
     <div className="max-w-3xl">
@@ -29,7 +45,12 @@ export default function Payments() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-sm text-soft">Código de barras</label>
-            <input name="barcode" className="input-base mt-1" value={form.barcode} onChange={handleChange} />
+            <input
+              name="barcode"
+              className="input-base mt-1"
+              value={form.barcode}
+              onChange={handleChange}
+            />
           </div>
           <div>
             <label className="text-sm text-soft">Etiqueta</label>
@@ -51,19 +72,43 @@ export default function Payments() {
           />
           <div>
             <label className="text-sm text-soft">Descrição</label>
-            <input name="description" className="input-base mt-1" value={form.description} onChange={handleChange} />
+            <input
+              name="description"
+              className="input-base mt-1"
+              value={form.description}
+              onChange={handleChange}
+            />
           </div>
+        </div>
+        <div>
+          <label className="text-sm text-soft">Categoria de Despesa (Opcional)</label>
+          <select
+            name="categoryId"
+            className="input-base mt-1"
+            value={form.categoryId}
+            onChange={handleChange}
+          >
+            <option value="">Sem categoria</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
+              </option>
+            ))}
+          </select>
         </div>
         <button className="button-primary" disabled={loading}>
           {loading ? 'Processando...' : 'Pagar boleto'}
         </button>
         {message && (
-          <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3" role="alert">
+          <div
+            className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3"
+            role="alert"
+          >
             {message}
           </div>
         )}
         <p className="text-xs text-soft">Lançamento classificado automaticamente como "Contas".</p>
       </form>
     </div>
-  );
+  )
 }

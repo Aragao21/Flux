@@ -1,31 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import useFluxStore from '../store/useFluxStore';
-import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
+import React, { useEffect, useState } from 'react'
+import useFluxStore from '../store/useFluxStore'
+import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput'
 
 export default function Pix() {
-  const { post, loading, balance, tags, refreshData } = useFluxStore();
-  const [form, setForm] = useState({ amount: '0,00', to: '', description: '', tag: 'Transferência' });
-  const [message, setMessage] = useState('');
+  const { post, loading, balance, tags, categories, refreshData } = useFluxStore()
+  const [form, setForm] = useState({
+    amount: '0,00',
+    to: '',
+    description: '',
+    tag: 'Transferência',
+    categoryId: '',
+  })
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    refreshData()
+  }, [refreshData])
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const send = async () => {
-    const numericAmount = parseCurrencyToNumber(form.amount);
+    const numericAmount = parseCurrencyToNumber(form.amount)
     const res = await post('/pix/send', {
       amount: numericAmount,
       to: form.to,
       description: form.description,
       tag: form.tag,
-    });
-    setMessage(res.message);
-    setForm({ amount: '0,00', to: '', description: '', tag: form.tag });
-  };
+      categoryId: form.categoryId ? Number(form.categoryId) : undefined,
+    })
+    setMessage(res.message)
+    setForm({ amount: '0,00', to: '', description: '', tag: form.tag, categoryId: form.categoryId })
+  }
 
-  const availableTags = ['Transferência', ...new Set(tags.map((t) => t.name))];
+  const availableTags = ['Transferência', ...new Set(tags.map((t) => t.name))]
 
   return (
     <div className="max-w-4xl space-y-4">
@@ -65,10 +72,31 @@ export default function Pix() {
             />
             <div>
               <label className="text-sm text-soft">Etiqueta</label>
-              <select name="tag" className="input-base mt-1" value={form.tag} onChange={handleChange}>
+              <select
+                name="tag"
+                className="input-base mt-1"
+                value={form.tag}
+                onChange={handleChange}
+              >
                 {availableTags.map((tag) => (
                   <option key={tag} value={tag}>
                     {tag}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm text-soft">Categoria de Despesa (Opcional)</label>
+              <select
+                name="categoryId"
+                className="input-base mt-1"
+                value={form.categoryId}
+                onChange={handleChange}
+              >
+                <option value="">Sem categoria</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.icon} {cat.name}
                   </option>
                 ))}
               </select>
@@ -77,22 +105,29 @@ export default function Pix() {
               {loading ? 'Enviando...' : 'Enviar PIX'}
             </button>
             {message && (
-              <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3" role="alert">
+              <div
+                className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3"
+                role="alert"
+              >
                 {message}
               </div>
             )}
           </div>
           <div className="card bg-gray-50 border border-gray-200 flex flex-col gap-2 text-left p-4 shadow-sm">
             <p className="text-sm font-semibold text-ink">Envio seguro</p>
-            <p className="text-xs text-soft">Revisamos valor, descrição, etiqueta e destinatário antes de registrar no extrato.</p>
+            <p className="text-xs text-soft">
+              Revisamos valor, descrição, etiqueta e destinatário antes de registrar no extrato.
+            </p>
             <ul className="text-xs text-soft list-disc list-inside space-y-1">
               <li>Saída categorizada como "Transferência"</li>
               <li>Comprovante oficial com prefixo FLUX</li>
             </ul>
           </div>
         </div>
-        <p className="text-xs text-soft">Tudo é registrado no saldo e extrato com comprovante imediato.</p>
+        <p className="text-xs text-soft">
+          Tudo é registrado no saldo e extrato com comprovante imediato.
+        </p>
       </div>
     </div>
-  );
+  )
 }

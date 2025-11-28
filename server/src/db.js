@@ -1,14 +1,17 @@
-const path = require('path');
-const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
+const path = require('path')
+const fs = require('fs')
+const sqlite3 = require('sqlite3').verbose()
 
-const dataDir = path.join(__dirname, '..', 'data');
+const dataDir = path.join(__dirname, '..', 'data')
 if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+  fs.mkdirSync(dataDir, { recursive: true })
 }
 
-const dbPath = path.join(dataDir, 'flux.db');
-const db = new sqlite3.Database(dbPath);
+const dbPath = path.join(dataDir, 'flux.db')
+const db = new sqlite3.Database(dbPath)
+
+// Configurar timezone para America/Sao_Paulo
+process.env.TZ = 'America/Sao_Paulo'
 
 db.serialize(() => {
   db.run(`
@@ -21,7 +24,7 @@ db.serialize(() => {
       role TEXT DEFAULT 'user',
       balance REAL DEFAULT 0
     )
-  `);
+  `)
 
   db.run(`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -37,24 +40,28 @@ db.serialize(() => {
       user_id INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-  `);
+  `)
 
   db.all("PRAGMA table_info('transactions')", (err, rows) => {
-    if (err) return;
-    const hasContested = rows.some((r) => r.name === 'contested');
-    const hasUserId = rows.some((r) => r.name === 'user_id');
-    const hasTag = rows.some((r) => r.name === 'tag');
+    if (err) return
+    const hasContested = rows.some((r) => r.name === 'contested')
+    const hasUserId = rows.some((r) => r.name === 'user_id')
+    const hasTag = rows.some((r) => r.name === 'tag')
+    const hasCategoryId = rows.some((r) => r.name === 'category_id')
     if (!hasContested) {
-      db.run('ALTER TABLE transactions ADD COLUMN contested INTEGER DEFAULT 0');
+      db.run('ALTER TABLE transactions ADD COLUMN contested INTEGER DEFAULT 0')
     }
     if (!hasUserId) {
-      db.run('ALTER TABLE transactions ADD COLUMN user_id INTEGER DEFAULT 1');
-      db.run('UPDATE transactions SET user_id = 1 WHERE user_id IS NULL');
+      db.run('ALTER TABLE transactions ADD COLUMN user_id INTEGER DEFAULT 1')
+      db.run('UPDATE transactions SET user_id = 1 WHERE user_id IS NULL')
     }
     if (!hasTag) {
-      db.run('ALTER TABLE transactions ADD COLUMN tag TEXT');
+      db.run('ALTER TABLE transactions ADD COLUMN tag TEXT')
     }
-  });
+    if (!hasCategoryId) {
+      db.run('ALTER TABLE transactions ADD COLUMN category_id INTEGER')
+    }
+  })
 
   db.run(`
     CREATE TABLE IF NOT EXISTS tags (
@@ -64,55 +71,105 @@ db.serialize(() => {
       user_id INTEGER DEFAULT 1,
       UNIQUE(name, user_id)
     )
-  `);
+  `)
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      color TEXT DEFAULT '#ED1C24',
+      icon TEXT DEFAULT '📁',
+      user_id INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(name, user_id)
+    )
+  `)
 
   db.all("PRAGMA table_info('users')", (err, rows) => {
-    if (err) return;
-    const hasRole = rows.some((r) => r.name === 'role');
-    const hasEmail = rows.some((r) => r.name === 'email');
+    if (err) return
+    const hasRole = rows.some((r) => r.name === 'role')
+    const hasEmail = rows.some((r) => r.name === 'email')
+
     if (!hasEmail) {
-      db.run('ALTER TABLE users ADD COLUMN email TEXT');
+      db.run('ALTER TABLE users ADD COLUMN email TEXT', () => {
+        console.log('Coluna email adicionada à tabela users')
+      })
     }
     if (!hasRole) {
-      db.run("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+      db.run("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'", () => {
+        console.log('Coluna role adicionada à tabela users')
+      })
     }
-  });
 
-  const seedUsers = [
-    ['flux', '123456', 'Admin Flux', 'admin@flux.app', 'admin', 2500],
-    ['danilo', 'senha123', 'Danilo Guarnieri', 'danilo@flux.app', 'user', 1850],
-    ['flavia', 'senha123', 'Flávia Aragão', 'flavia@flux.app', 'user', 3200],
-    ['joao', 'senha123', 'João Piola', 'joao@flux.app', 'user', 1420],
-  ];
+    // Aguarda um pouco para garantir que as colunas foram adicionadas
+    setTimeout(() => {
+      seedUsersData()
+    }, 100)
+  })
 
-  const stmt = db.prepare(
-    'INSERT OR IGNORE INTO users (username, password, name, email, role, balance) VALUES (?, ?, ?, ?, ?, ?)'
-  );
-  seedUsers.forEach((u) => stmt.run(u));
-  stmt.finalize();
-  db.run("UPDATE users SET role = 'admin' WHERE username = 'flux'");
-  db.run("UPDATE users SET email = COALESCE(email, username || '@flux.app')");
+  function seedUsersData() {
+    const seedUsers = [
+      ['flux', '123456', 'Admin Flux', 'admin@flux.app', 'admin', 2500],
+      ['danilo', 'senha123', 'Danilo Guarnieri', 'danilo@flux.app', 'user', 1850],
+      ['flavia', 'senha123', 'Flávia Aragão', 'flavia@flux.app', 'user', 3200],
+      ['joao', 'senha123', 'João Piola', 'joao@flux.app', 'user', 1420],
+    ]
 
-  const defaultTags = [
-    { name: 'Transferência', color: '#ED1C24' },
-    { name: 'Recebimento', color: '#16a34a' },
-    { name: 'Contas', color: '#0ea5e9' },
-    { name: 'Telefone', color: '#f97316' },
-    { name: 'Compras', color: '#8b5cf6' },
-    { name: 'Cashback', color: '#16a34a' },
-    { name: 'Seguro', color: '#0f172a' },
-    { name: 'Empréstimo', color: '#10b981' },
-    { name: 'Recarga', color: '#f97316' },
-  ];
+    const stmt = db.prepare(
+      'INSERT OR IGNORE INTO users (username, password, name, email, role, balance) VALUES (?, ?, ?, ?, ?, ?)',
+    )
+    seedUsers.forEach((u) => stmt.run(u))
+    stmt.finalize(() => {
+      db.run("UPDATE users SET role = 'admin' WHERE username = 'flux'")
+      db.run("UPDATE users SET email = COALESCE(email, username || '@flux.app')")
 
-  db.all('SELECT id FROM users', (err, users) => {
-    if (err) return;
-    users.forEach((user) => {
-      const tagStmt = db.prepare('INSERT OR IGNORE INTO tags (name, color, user_id) VALUES (?, ?, ?)');
-      defaultTags.forEach((tag) => tagStmt.run(tag.name, tag.color, user.id));
-      tagStmt.finalize();
-    });
-  });
-});
+      // Seed tags e categorias após os usuários
+      seedTagsAndCategories()
+    })
+  }
 
-module.exports = db;
+  function seedTagsAndCategories() {
+    const defaultTags = [
+      { name: 'Transferência', color: '#ED1C24' },
+      { name: 'Recebimento', color: '#16a34a' },
+      { name: 'Contas', color: '#0ea5e9' },
+      { name: 'Telefone', color: '#f97316' },
+      { name: 'Compras', color: '#8b5cf6' },
+      { name: 'Cashback', color: '#16a34a' },
+      { name: 'Seguro', color: '#0f172a' },
+      { name: 'Empréstimo', color: '#10b981' },
+      { name: 'Recarga', color: '#f97316' },
+    ]
+
+    const defaultCategories = [
+      { name: 'Alimentação', color: '#f97316', icon: '🍔' },
+      { name: 'Transporte', color: '#0ea5e9', icon: '🚗' },
+      { name: 'Saúde', color: '#10b981', icon: '💊' },
+      { name: 'Educação', color: '#8b5cf6', icon: '📚' },
+      { name: 'Lazer', color: '#ec4899', icon: '🎮' },
+      { name: 'Moradia', color: '#0f172a', icon: '🏠' },
+      { name: 'Vestuário', color: '#14b8a6', icon: '👕' },
+      { name: 'Viagem', color: '#f59e0b', icon: '✈️' },
+      { name: 'Outros', color: '#6b7280', icon: '📁' },
+    ]
+
+    db.all('SELECT id FROM users', (err, users) => {
+      if (err) return
+      users.forEach((user) => {
+        const tagStmt = db.prepare(
+          'INSERT OR IGNORE INTO tags (name, color, user_id) VALUES (?, ?, ?)',
+        )
+        defaultTags.forEach((tag) => tagStmt.run(tag.name, tag.color, user.id))
+        tagStmt.finalize()
+
+        const catStmt = db.prepare(
+          'INSERT OR IGNORE INTO categories (name, color, icon, user_id) VALUES (?, ?, ?, ?)',
+        )
+        defaultCategories.forEach((cat) => catStmt.run(cat.name, cat.color, cat.icon, user.id))
+        catStmt.finalize()
+      })
+    })
+  }
+})
+
+module.exports = db
