@@ -1,24 +1,25 @@
-
 # Arquitetura Flux
 
 ## Visão geral
+
 - **Front-end:** React (Vite) + Tailwind + Zustand. Deploy recomendado: Vercel (diretório `client/`).
 - **Back-end:** Node.js + Express + SQLite. Deploy recomendado: Render, Railway ou outra plataforma Node (diretório `server/`).
 - **Banco:** SQLite local (`server/data/flux.db`).
 
 ## Deploy em nuvem
-- **Frontend:**  
+
+- **Frontend:**
   - Suba o projeto para o GitHub.
   - No Vercel, selecione o repositório e a pasta `client/`.
   - Configure o build (`npm run build`) e output (`dist`).
   - Configure a variável de ambiente `VITE_API_URL` apontando para a URL do backend hospedado.
-- **Backend:**  
+- **Backend:**
   - Suba a pasta `server/` em Render, Railway ou similar.
   - Configure o start (`npm run start`) e mantenha o banco SQLite persistente.
   - Exporte a URL do backend (ex: `https://flux-backend.onrender.com`).
 
-
 ## Diagrama de componentes (Mermaid)
+
 ```mermaid
 graph LR
   UI[Front-end React/Tailwind] -- fetch --> API[Express API]
@@ -33,8 +34,8 @@ graph LR
   end
 ```
 
-
 ## Diagrama UML de casos de uso
+
 ```mermaid
 usecaseDiagram
   actor Usuario
@@ -53,6 +54,7 @@ usecaseDiagram
 ```
 
 ## Modelo E-R simplificado
+
 ```mermaid
 erDiagram
   USERS ||--o{ TRANSACTIONS : registra
@@ -79,12 +81,14 @@ erDiagram
 ```
 
 ## Fluxo de categorização
+
 - PIX enviado → categoria **Transferência** (saída)
 - PIX recebido → **Recebimento** (entrada)
 - Recarga → **Telefone** (saída)
 - Pagamento → **Contas** (saída)
 
 ## Rotas principais
+
 - `POST /api/auth/login`
 - `POST /api/pix/send`
 - `POST /api/payments`
@@ -98,5 +102,6 @@ erDiagram
 - `PUT /api/users/:id`
 
 ## Convenções visuais
+
 - Primária: vermelho Claro `#ED1C24`.
 - Fundo claro, alto contraste, botões arredondados e tipografia Inter.
