@@ -1,19 +1,23 @@
-import React, { useState } from 'react';
-import useFluxStore from '../store/useFluxStore';
-import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
+import React, { useState } from 'react'
+import useFluxStore from '../store/useFluxStore'
+import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput'
 
 export default function Pix() {
-  const { post, loading, balance } = useFluxStore();
-  const [form, setForm] = useState({ amount: '0,00', to: '', description: '' });
-  const [message, setMessage] = useState('');
+  const { post, loading, balance } = useFluxStore()
+  const [form, setForm] = useState({ amount: '0,00', to: '', description: '' })
+  const [message, setMessage] = useState('')
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const send = async () => {
-    const numericAmount = parseCurrencyToNumber(form.amount);
-    const res = await post('/pix/send', { amount: numericAmount, to: form.to, description: form.description });
-    setMessage(res.message);
-  };
+    const numericAmount = parseCurrencyToNumber(form.amount)
+    const res = await post('/pix/send', {
+      amount: numericAmount,
+      to: form.to,
+      description: form.description,
+    })
+    setMessage(res.message)
+  }
 
   return (
     <div className="grid md:grid-cols-2 gap-4">
@@ -55,14 +59,19 @@ export default function Pix() {
               {loading ? 'Enviando...' : 'Enviar PIX'}
             </button>
             {message && (
-              <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3" role="alert">
+              <div
+                className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3"
+                role="alert"
+              >
                 {message}
               </div>
             )}
           </div>
           <div className="card bg-gray-50 border border-gray-200 flex flex-col gap-2 text-left p-4">
             <p className="text-sm font-semibold text-ink">Envio seguro</p>
-            <p className="text-xs text-soft">Revisamos valor, descrição e destinatário antes de registrar no extrato.</p>
+            <p className="text-xs text-soft">
+              Revisamos valor, descrição e destinatário antes de registrar no extrato.
+            </p>
             <ul className="text-xs text-soft list-disc list-inside space-y-1">
               <li>Saída categorizada como "Transferência"</li>
               <li>Comprovante fake com prefixo FLUX</li>
@@ -70,13 +79,15 @@ export default function Pix() {
             </ul>
           </div>
         </div>
-        <p className="text-xs text-soft">Operação simulada: saída categorizada como "Transferência" com comprovante FLUX.</p>
+        <p className="text-xs text-soft">
+          Operação simulada: saída categorizada como "Transferência" com comprovante FLUX.
+        </p>
       </div>
       <div className="card p-6 bg-gradient-to-b from-white to-red-50 space-y-4">
         <h3 className="text-lg font-semibold">Dicas para um PIX sem fricção</h3>
         <p className="text-sm text-soft">
-          Confirme o destinatário, valide o valor e use a máscara automática para manter centavos alinhados. Caso algo saia do
-          esperado, acione "Contestar PIX" direto no extrato.
+          Confirme o destinatário, valide o valor e use a máscara automática para manter centavos
+          alinhados.
         </p>
         <div className="bg-white border border-gray-200 rounded-xl p-3 text-sm space-y-1">
           <p className="font-semibold text-ink">Resumo da transferência</p>
@@ -86,5 +97,5 @@ export default function Pix() {
         </div>
       </div>
     </div>
-  );
+  )
 }
