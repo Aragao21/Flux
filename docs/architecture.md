@@ -6,24 +6,29 @@
 - **Back-end:** Node.js + Express + SQLite. Deploy recomendado: Render, Railway ou outra plataforma Node (diretório `server/`).
 - **Banco:** SQLite local (`server/data/flux.db`).
 
-## Deploy em nuvem
+## Como rodar localmente
 
-- **Frontend:**
-  - Suba o projeto para o GitHub.
-  - No Vercel, selecione o repositório e a pasta `client/`.
-  - Configure o build (`npm run build`) e output (`dist`).
-  - Configure a variável de ambiente `VITE_API_URL` apontando para a URL do backend hospedado.
-- **Backend:**
-  - Suba a pasta `server/` em Render, Railway ou similar.
-  - Configure o start (`npm run start`) e mantenha o banco SQLite persistente.
-  - Exporte a URL do backend (ex: `https://flux-backend.onrender.com`).
+1. Instale as dependências em cada pasta:
+
+- `cd server && npm install`
+- `cd ../client && npm install`
+
+2. Inicie o backend:
+
+- `cd server && npm run start` (porta 4000)
+
+3. Em outro terminal, inicie o frontend:
+
+- `cd client && npm run dev` (porta 5173, proxy para a API)
+
+4. Acesse `http://localhost:5173` no navegador.
+5. O banco SQLite será criado automaticamente em `server/data/flux.db`.
 
 ## Diagrama de componentes (Mermaid)
 
 ```mermaid
 graph LR
   UI[Front-end React/Tailwind] -- fetch --> API[Express API]
-  UI -- Vercel --> API
   API -- SQLite driver --> DB[(flux.db)]
   subgraph Client
     UI
@@ -34,23 +39,29 @@ graph LR
   end
 ```
 
-## Diagrama UML de casos de uso
+## Diagrama de casos de uso (compatível GitHub)
 
 ```mermaid
-usecaseDiagram
-  actor Usuario
-  rectangle Flux {
-    usecase EnviarPIX as "Enviar PIX"
-    usecase PagarConta as "Pagar conta"
-    usecase Recarregar as "Recarga"
-    usecase ConsultarExtrato as "Extrato inteligente"
-    usecase GerenciarPerfil as "Perfil e logout"
-  }
+flowchart TD
+  Usuario((Usuário))
+  EnviarPIX([Enviar PIX])
+  PagarConta([Pagar conta])
+  Recarregar([Recarga])
+  ConsultarExtrato([Extrato inteligente])
+  GerenciarPerfil([Perfil e logout])
+  CompartilharComprovante([Compartilhar comprovante])
+  FiltrarExtrato([Filtrar extrato])
+  VisualizarGraficos([Visualizar gráficos])
+  PersonalizarCategorias([Personalizar categorias/tags])
   Usuario --> EnviarPIX
   Usuario --> PagarConta
   Usuario --> Recarregar
   Usuario --> ConsultarExtrato
   Usuario --> GerenciarPerfil
+  Usuario --> CompartilharComprovante
+  Usuario --> FiltrarExtrato
+  Usuario --> VisualizarGraficos
+  Usuario --> PersonalizarCategorias
 ```
 
 ## Modelo E-R simplificado
@@ -58,6 +69,8 @@ usecaseDiagram
 ```mermaid
 erDiagram
   USERS ||--o{ TRANSACTIONS : registra
+  USERS ||--o{ CATEGORIES : possui
+  TRANSACTIONS ||--o{ CATEGORIES : categorizada
   USERS {
     int id PK
     string username
@@ -75,17 +88,48 @@ erDiagram
     float amount
     string party
     string description
-    string category
+    int category_id FK
     datetime created_at
   }
+  CATEGORIES {
+    int id PK
+    int user_id FK
+    string name
+    string color
+    string icon
+  }
 ```
+
+## Extrato Inteligente
+
+O Extrato Inteligente do Flux oferece:
+
+- **Filtros avançados:** por tipo de transação, categoria e período.
+- **Gráficos dinâmicos:** distribuição de gastos por categoria e tipo, com cores e ícones personalizados.
+- **Comprovantes digitais:** cada transação gera comprovante detalhado, com opção de compartilhamento nativo (Web Share API) ou cópia para área de transferência.
+- **Busca e navegação responsiva:** resultados instantâneos, abas para transações atuais e futuras.
+
+## Camada de Personalização
+
+- **Categorias customizáveis:** usuário pode criar, editar e excluir categorias, escolhendo cor e ícone.
+- **Engajamento:** a personalização estimula o usuário a categorizar suas transações, tornando o extrato mais visual, útil e interativo.
+- **Integração com filtros e gráficos:** toda personalização é refletida nos filtros, gráficos e comprovantes, promovendo senso de controle e pertencimento.
+
+## UI/UX
+
+- **Design responsivo:** interface adaptada para web, tablet e celular, com grid fluido e componentes reativos.
+- **Acessibilidade:** contraste alto, fontes legíveis (Inter), botões grandes e feedback visual em todas as ações.
+- **Visual atrativo:** paleta clara, destaque para cor primária (#ED1C24), gráficos animados, ícones modernos e navegação intuitiva.
+- **Experiência mobile-first:** menus, cards e botões otimizados para toque, sem perder recursos avançados no desktop.
 
 ## Fluxo de categorização
 
 - PIX enviado → categoria **Transferência** (saída)
-- PIX recebido → **Recebimento** (entrada)
 - Recarga → **Telefone** (saída)
 - Pagamento → **Contas** (saída)
+- Compra com cashback → **Compras** (saída)
+- Seguro contratado → **Seguros** (saída)
+- Empréstimo contratado → **Empréstimos** (entrada)
 
 ## Rotas principais
 
@@ -103,5 +147,5 @@ erDiagram
 
 ## Convenções visuais
 
-- Primária: vermelho Claro `#ED1C24`.
+- Primária: vermelho `#ED1C24`.
 - Fundo claro, alto contraste, botões arredondados e tipografia Inter.
