@@ -2,7 +2,7 @@
 
 ## Visão geral
 - **Front-end**: React (Vite) com Tailwind e Zustand para estado global. Comunicação com `/api` via fetch.
-- **Back-end**: Node.js + Express. Rotas REST para PIX, pagamentos, recargas, serviços, perfil e login simulado.
+- **Back-end**: Node.js + Express. Rotas REST para PIX, pagamentos, recargas, serviços, perfil e login controlado por usuário.
 - **Banco**: SQLite local em `data/flux.db` com tabelas `users` e `transactions` (com `user_id`).
 
 ## Diagrama de componentes (Mermaid)

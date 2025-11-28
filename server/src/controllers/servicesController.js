@@ -21,7 +21,7 @@ async function purchase(req, res) {
       description: 'Bônus 5%',
       userId,
     });
-    res.json({ message: 'Compra simulada com cashback creditado.', balance: cashbackTx.newBalance });
+    res.json({ message: 'Compra registrada com cashback creditado.', balance: cashbackTx.newBalance });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao registrar compra', error: error.message });
   }
@@ -40,7 +40,7 @@ async function insurance(req, res) {
       description: 'Assinatura de seguro',
       userId,
     });
-    res.json({ message: 'Seguro simulado com sucesso.', balance: result.newBalance });
+    res.json({ message: 'Seguro ativado com sucesso.', balance: result.newBalance });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao registrar seguro', error: error.message });
   }
@@ -59,7 +59,7 @@ async function loan(req, res) {
       description: description || 'Crédito liberado',
       userId,
     });
-    res.json({ message: 'Empréstimo liberado no saldo simulado.', balance: result.newBalance });
+    res.json({ message: 'Empréstimo liberado em conta.', balance: result.newBalance });
   } catch (error) {
     res.status(500).json({ message: 'Erro ao registrar empréstimo', error: error.message });
   }

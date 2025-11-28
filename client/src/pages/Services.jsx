@@ -21,9 +21,11 @@ export default function Services() {
     return top?.[0];
   }, [transactions]);
 
-  const handleSubmit = async (path, payload) => {
+  const handleSubmit = async (path, payload, onSuccess) => {
+    setMessage('');
     const res = await post(path, payload);
-    setMessage(res.message);
+    setMessage(res.message || 'Operação concluída e registrada no extrato.');
+    if (onSuccess) onSuccess();
   };
 
   useEffect(() => {
@@ -34,14 +36,14 @@ export default function Services() {
   }, [location.hash]);
 
   const personalizedText = favoriteCategory
-    ? `Você tem usado muito ${favoriteCategory}. Experimente testar cashback, seguro ou empréstimo e veja o impacto no saldo simulado.`
-    : 'Escolha um serviço para testar personalização e incentivos de engajamento.';
+    ? `Você tem usado bastante ${favoriteCategory}. Ative cashback, seguro ou empréstimo e veja o impacto direto no saldo e no extrato.`
+    : 'Escolha um serviço e acompanhe o lançamento instantâneo no extrato.';
 
   return (
     <div className="space-y-4">
-      <div className="card p-6 bg-ink text-white flex flex-col gap-2">
+      <div className="card p-6 bg-ink text-white flex flex-col gap-2 shadow-lg">
         <h2 className="text-xl font-semibold">Serviços com engajamento</h2>
-        <p className="text-sm text-gray-200">Cashback, seguro e empréstimo com simulação imediata.</p>
+        <p className="text-sm text-gray-200">Cashback, seguro e empréstimo com confirmação imediata.</p>
         <p className="text-xs text-gray-200" role="status">
           {personalizedText}
         </p>
@@ -52,7 +54,7 @@ export default function Services() {
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Compras com cashback</p>
             <h3 className="text-lg font-semibold text-ink">Ganhe 5% de volta</h3>
-            <p className="text-sm text-soft">Simule compras e receba crédito automático de cashback.</p>
+            <p className="text-sm text-soft">Registre compras e receba crédito automático de cashback.</p>
           </div>
           <CurrencyInput
             label="Valor da compra"
@@ -73,13 +75,17 @@ export default function Services() {
             className="button-primary w-full"
             disabled={loading}
             onClick={() =>
-              handleSubmit('/services/purchase', {
-                amount: parseCurrencyToNumber(purchase.amount),
-                merchant: purchase.merchant,
-              })
+              handleSubmit(
+                '/services/purchase',
+                {
+                  amount: parseCurrencyToNumber(purchase.amount),
+                  merchant: purchase.merchant,
+                },
+                () => setPurchase({ amount: '0,00', merchant: '' })
+              )
             }
           >
-            Simular compra + cashback
+            Registrar compra + cashback
           </button>
         </div>
 
@@ -87,7 +93,7 @@ export default function Services() {
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Seguro</p>
             <h3 className="text-lg font-semibold text-ink">Proteção rápida</h3>
-            <p className="text-sm text-soft">Registre um seguro simulado e veja o impacto no saldo.</p>
+            <p className="text-sm text-soft">Registre um seguro e acompanhe o impacto no saldo.</p>
           </div>
           <CurrencyInput
             label="Mensalidade"
@@ -108,10 +114,14 @@ export default function Services() {
             className="button-primary w-full"
             disabled={loading}
             onClick={() =>
-              handleSubmit('/services/insurance', {
-                amount: parseCurrencyToNumber(insurance.amount),
-                provider: insurance.provider,
-              })
+              handleSubmit(
+                '/services/insurance',
+                {
+                  amount: parseCurrencyToNumber(insurance.amount),
+                  provider: insurance.provider,
+                },
+                () => setInsurance({ amount: '0,00', provider: '' })
+              )
             }
           >
             Registrar seguro
@@ -122,7 +132,7 @@ export default function Services() {
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Empréstimo</p>
             <h3 className="text-lg font-semibold text-ink">Saldo imediato</h3>
-            <p className="text-sm text-soft">Simule crédito entrando como saldo em conta.</p>
+            <p className="text-sm text-soft">Libere crédito entrando como saldo em conta.</p>
           </div>
           <CurrencyInput
             label="Valor solicitado"
@@ -143,10 +153,14 @@ export default function Services() {
             className="button-primary w-full"
             disabled={loading}
             onClick={() =>
-              handleSubmit('/services/loan', {
-                amount: parseCurrencyToNumber(loan.amount),
-                description: loan.description,
-              })
+              handleSubmit(
+                '/services/loan',
+                {
+                  amount: parseCurrencyToNumber(loan.amount),
+                  description: loan.description,
+                },
+                () => setLoan({ amount: '0,00', description: '' })
+              )
             }
           >
             Liberar empréstimo

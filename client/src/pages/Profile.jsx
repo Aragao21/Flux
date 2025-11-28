@@ -58,7 +58,7 @@ export default function Profile() {
             <span className="font-semibold capitalize">{user.role}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-soft">Saldo simulado</span>
+            <span className="text-soft">Saldo em conta</span>
             <span className="font-semibold">R$ {Number(balance).toFixed(2)}</span>
           </div>
         </div>

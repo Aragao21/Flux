@@ -12,8 +12,10 @@ export default function Payments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const numericAmount = parseCurrencyToNumber(form.amount);
+    setMessage('');
     const res = await post('/payments', { ...form, amount: numericAmount });
     setMessage(res.message);
+    setForm({ amount: '0,00', barcode: '', description: '' });
   };
 
   return (
@@ -47,10 +49,10 @@ export default function Payments() {
         <p className="text-xs text-soft">Lançamento classificado automaticamente como "Contas".</p>
       </form>
       <div className="card p-6 bg-ink text-white space-y-3">
-        <h3 className="text-lg font-semibold">Simulação guiada</h3>
+        <h3 className="text-lg font-semibold">Fluxo guiado</h3>
         <p className="text-sm text-gray-200">
-          O pagamento cria uma saída no saldo e registra o código informado. Use descrições curtas para identificar
-          rápido no extrato.
+          O pagamento cria uma saída no saldo e registra o código informado. Use descrições curtas para identificar rápido no
+          extrato.
         </p>
         <div className="bg-white/10 p-4 rounded-xl text-sm text-gray-100 space-y-1">
           <p>Exemplo:</p>

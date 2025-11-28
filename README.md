@@ -1,6 +1,6 @@
-# Flux — Hub Financeiro Simulado
+# Flux — Hub Financeiro Digital
 
-Aplicação full-stack (frontend Vite + React + Tailwind, backend Node.js + Express + SQLite) que simula um hub financeiro móvel com módulos de PIX, pagamento de contas, recarga e extrato inteligente categorizado.
+Aplicação full-stack (frontend Vite + React + Tailwind, backend Node.js + Express + SQLite) que entrega um hub financeiro móvel com módulos de PIX, pagamento de contas, recarga e extrato inteligente categorizado.
 
 ## Estrutura
 - `client/`: Front-end React com Tailwind e gráfico de categorias (Chart.js).
@@ -13,14 +13,14 @@ Aplicação full-stack (frontend Vite + React + Tailwind, backend Node.js + Expr
 2. Inicie a API: `npm run start` em `server/` (porta 4000).
 3. Inicie o front: `npm run dev` em `client/` (porta 5173, proxy para a API).
 
-Credenciais simuladas de login:
+Credenciais de acesso:
 - **flux / 123456** (admin)
 - **danilo / senha123**
 - **flavia / senha123**
 - **joao / senha123**
 
 ## Funcionalidades
-- PIX (envio direto, sem QR) com comprovante fake, contestação rápida e registro no extrato.
+- PIX (envio direto, sem QR) com comprovante, contestação rápida e registro no extrato.
 - Pagamento de contas, recarga de celular e serviços (cashback, seguro e empréstimo) com lançamentos categorizados.
 - Extrato inteligente com cores/ícones e gráfico por categoria, incluindo marcação de contestação e filtro por usuário logado.
 - Campos monetários com máscara automática (vírgula fixa para centavos) para evitar erros de digitação.

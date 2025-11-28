@@ -13,9 +13,9 @@ async function recharge(req, res) {
       description: 'Recarga de celular',
       userId,
     });
-    res.json({ message: 'Recarga simulada.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
+    res.json({ message: 'Recarga concluída.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao simular recarga', error: error.message });
+    res.status(500).json({ message: 'Erro ao registrar recarga', error: error.message });
   }
 }
 

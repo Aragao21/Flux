@@ -13,9 +13,9 @@ async function payBill(req, res) {
       description: description || 'Pagamento de conta',
       userId,
     });
-    res.json({ message: 'Pagamento simulado realizado.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
+    res.json({ message: 'Pagamento registrado com sucesso.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao simular pagamento', error: error.message });
+    res.status(500).json({ message: 'Erro ao registrar pagamento', error: error.message });
   }
 }
 

@@ -12,8 +12,10 @@ export default function Recharge() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const numericAmount = parseCurrencyToNumber(form.amount);
+    setMessage('');
     const res = await post('/recharges', { ...form, amount: numericAmount });
     setMessage(res.message);
+    setForm({ amount: '0,00', phone: '', operator: '' });
   };
 
   return (
@@ -48,9 +50,9 @@ export default function Recharge() {
         <p className="text-xs text-soft">A categoria é atribuída como "Telefone" automaticamente.</p>
       </form>
       <div className="card p-6 bg-gradient-to-b from-white via-white to-gray-50 space-y-3">
-        <h3 className="text-lg font-semibold">Simulação instantânea</h3>
+        <h3 className="text-lg font-semibold">Recarga imediata</h3>
         <p className="text-sm text-soft">
-          Ideal para testar fluxos de UX: altere valores, operadoras e veja o extrato se ajustar em poucos cliques.
+          Alterne valores e operadoras e acompanhe o extrato se ajustar em tempo real.
         </p>
         <div className="grid grid-cols-3 gap-2 text-sm">
           {[15, 25, 35].map((value) => (

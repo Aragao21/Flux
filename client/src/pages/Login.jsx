@@ -51,7 +51,7 @@ export default function Login() {
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
         <div className="text-xs text-soft text-left space-y-1 bg-gray-50 border border-gray-200 p-3 rounded-xl">
-          <p className="font-semibold text-ink text-sm">Usuários simulados</p>
+          <p className="font-semibold text-ink text-sm">Usuários de acesso</p>
           <p>flux (admin) / 123456</p>
           <p>danilo / senha123</p>
           <p>flavia / senha123</p>

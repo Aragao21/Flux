@@ -13,9 +13,9 @@ async function sendPix(req, res) {
       description: description || 'Envio de PIX',
       userId,
     });
-    res.json({ message: 'PIX enviado com sucesso (simulado).', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
+    res.json({ message: 'PIX enviado com sucesso.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao simular PIX enviado', error: error.message });
+    res.status(500).json({ message: 'Erro ao registrar PIX', error: error.message });
   }
 }
 

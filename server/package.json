@@ -1,7 +1,7 @@
 {
   "name": "flux-server",
   "version": "1.0.0",
-  "description": "API do hub financeiro Flux (simulado)",
+  "description": "API do hub financeiro Flux",
   "type": "commonjs",
   "main": "src/index.js",
   "scripts": {
