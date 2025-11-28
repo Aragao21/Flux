@@ -6,7 +6,7 @@ import TransactionList from '../components/TransactionList';
 import useFluxStore from '../store/useFluxStore';
 
 export default function Home() {
-  const { refreshData, balance, transactions } = useFluxStore();
+  const { refreshData, balance, transactions, user } = useFluxStore();
 
   useEffect(() => {
     refreshData();
@@ -23,8 +23,20 @@ export default function Home() {
     return 'Use atalhos para simular novas ações e ver o extrato inteligente em tempo real.';
   }, [transactions]);
 
+  const displayName = user?.username === 'flux' ? 'Admin' : user?.name || 'Flux';
+
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <p className="text-xs text-soft">Experiência personalizada</p>
+            <h2 className="text-xl font-semibold">Olá, {displayName}</h2>
+          </div>
+          <span className="text-xs text-soft bg-white px-3 py-1 rounded-full border border-gray-200">Interface otimizada para mobile, tablet e web</span>
+        </div>
+      </div>
+
       <div className="grid md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <BalanceCard balance={balance} income={income} outcome={outcome} />
@@ -53,11 +65,39 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <QuickActionCard title="PIX" description="Envie ou receba em instantes" to="/pix" accent="#ED1C24" />
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <QuickActionCard title="PIX" description="Envie sem fricção" to="/pix" accent="#ED1C24" />
         <QuickActionCard title="Pagamentos" description="Boletos e cobranças" to="/pagamentos" accent="#0ea5e9" />
         <QuickActionCard title="Recarga" description="Recarregue qualquer operadora" to="/recarga" accent="#f97316" />
-        <QuickActionCard title="Serviços" description="Cashback, seguro e crédito" to="/servicos" accent="#16a34a" />
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h3 className="section-title">Serviços com personalização</h3>
+          <Link to="/servicos" className="text-sm text-flux font-semibold">
+            Ver todos os serviços →
+          </Link>
+        </div>
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <QuickActionCard
+            title="Compras com cashback"
+            description="Ganhe 5% de volta automaticamente"
+            to="/servicos#cashback"
+            accent="#8b5cf6"
+          />
+          <QuickActionCard
+            title="Seguro"
+            description="Proteção simulada com registro imediato"
+            to="/servicos#seguro"
+            accent="#0f172a"
+          />
+          <QuickActionCard
+            title="Empréstimo"
+            description="Saldo liberado na hora"
+            to="/servicos#emprestimo"
+            accent="#10b981"
+          />
+        </div>
       </div>
 
       <div className="space-y-3">

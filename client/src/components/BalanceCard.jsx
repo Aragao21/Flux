@@ -11,7 +11,7 @@ export default function BalanceCard({ balance, income, outcome }) {
         </div>
         <div className="h-12 w-12 rounded-2xl bg-flux text-white flex items-center justify-center font-semibold">Flux</div>
       </div>
-      <div className="grid grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div className="flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm border border-gray-100">
           <span className="h-9 w-9 rounded-xl bg-green-100 text-green-700 flex items-center justify-center">
             <ArrowDownLeftIcon />

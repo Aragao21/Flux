@@ -2,7 +2,8 @@ const { persistTransaction } = require('../services/transactionsService');
 
 async function payBill(req, res) {
   try {
-    const { amount, barcode, description } = req.body;
+    const { amount, barcode, description, userId: rawUserId } = req.body;
+    const userId = Number(rawUserId) || 1;
     if (!amount || !barcode) return res.status(400).json({ message: 'Valor e código de barras são obrigatórios.' });
     const result = await persistTransaction({
       type: 'PAGAMENTO',
@@ -10,6 +11,7 @@ async function payBill(req, res) {
       amount: Number(amount),
       party: barcode,
       description: description || 'Pagamento de conta',
+      userId,
     });
     res.json({ message: 'Pagamento simulado realizado.', receipt: `FLUX-${Date.now()}`, balance: result.newBalance });
   } catch (error) {

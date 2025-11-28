@@ -12,7 +12,19 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/', (_req, res) => {
-  res.json({ status: 'Flux API online', endpoints: ['/api/auth/login', '/api/summary', '/api/pix/send'] });
+  res.json({
+    status: 'Flux API online',
+    endpoints: [
+      '/api/auth/login',
+      '/api/pix/send',
+      '/api/payments',
+      '/api/recharges',
+      '/api/services/*',
+      '/api/transactions',
+      '/api/summary',
+      '/api/users/:id',
+    ],
+  });
 });
 
 app.use('/api', router);

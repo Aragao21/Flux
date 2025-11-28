@@ -22,8 +22,8 @@ export default function TransactionList({ transactions }) {
         const color = tx.direction === 'debit' ? 'text-red-600' : 'text-green-700';
         const showContest = tx.type === 'PIX_ENVIADO';
         return (
-          <div key={tx.id} className="py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div key={tx.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <div className="h-10 w-10 rounded-xl flex items-center justify-center text-lg" style={{ background: '#fef2f2' }}>
                 <span style={{ color: tx.categoryMeta?.color || '#ED1C24' }}>{tx.categoryMeta?.icon || '•'}</span>
               </div>
@@ -45,7 +45,7 @@ export default function TransactionList({ transactions }) {
                 )}
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-right w-full sm:w-auto">
               <p className={`font-semibold ${color}`}>
                 {sign} R$ {Number(tx.amount).toFixed(2)}
               </p>

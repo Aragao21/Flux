@@ -16,22 +16,23 @@ const directionFactor = {
   debit: -1,
 };
 
-function persistTransaction({ type, direction, amount, party, description }) {
+function persistTransaction({ type, direction, amount, party, description, userId }) {
+  const targetUserId = Number(userId) || 1;
   return new Promise((resolve, reject) => {
     const rule = categoryRules[type];
     const category = rule ? rule.label : 'Outros';
 
     db.run(
-      `INSERT INTO transactions (type, direction, amount, party, description, category) VALUES (?, ?, ?, ?, ?, ?)`,
-      [type, direction, amount, party, description, category],
+      `INSERT INTO transactions (type, direction, amount, party, description, category, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [type, direction, amount, party, description, category, targetUserId],
       function (err) {
         if (err) return reject(err);
         const id = this.lastID;
-        db.get('SELECT balance FROM users WHERE username = ?', ['flux'], (errUser, userRow) => {
-          if (errUser || !userRow) return reject(errUser);
+        db.get('SELECT id, balance FROM users WHERE id = ?', [targetUserId], (errUser, userRow) => {
+          if (errUser || !userRow) return reject(errUser || new Error('Usuário não encontrado'));
           const delta = (directionFactor[direction] || 1) * amount;
           const newBalance = userRow.balance + delta;
-          db.run('UPDATE users SET balance = ? WHERE username = ?', [newBalance, 'flux']);
+          db.run('UPDATE users SET balance = ? WHERE id = ?', [newBalance, userRow.id]);
           resolve({ id, category, newBalance });
         });
       }
@@ -48,9 +49,9 @@ function contestTransaction(id) {
   });
 }
 
-function listTransactions() {
+function listTransactions(userId = 1) {
   return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM transactions ORDER BY datetime(created_at) DESC', (err, rows) => {
+    db.all('SELECT * FROM transactions WHERE user_id = ? ORDER BY datetime(created_at) DESC', [userId], (err, rows) => {
       if (err) return reject(err);
       const withRules = rows.map((row) => ({
         ...row,
@@ -61,9 +62,9 @@ function listTransactions() {
   });
 }
 
-function summary() {
+function summary(userId = 1) {
   return new Promise((resolve, reject) => {
-    db.all('SELECT category, direction, amount FROM transactions', (err, rows) => {
+    db.all('SELECT category, direction, amount FROM transactions WHERE user_id = ?', [userId], (err, rows) => {
       if (err) return reject(err);
       const totals = {};
       rows.forEach((row) => {
@@ -71,7 +72,7 @@ function summary() {
         const sign = directionFactor[row.direction] || 1;
         totals[key] = (totals[key] || 0) + sign * row.amount;
       });
-      db.get('SELECT balance FROM users WHERE username = ?', ['flux'], (errUser, userRow) => {
+      db.get('SELECT balance FROM users WHERE id = ?', [userId], (errUser, userRow) => {
         if (errUser) return reject(errUser);
         resolve({ balance: userRow ? userRow.balance : 0, totals });
       });

@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
 import useFluxStore from '../store/useFluxStore';
 
@@ -8,6 +9,7 @@ export default function Services() {
   const [insurance, setInsurance] = useState({ amount: '0,00', provider: '' });
   const [loan, setLoan] = useState({ amount: '0,00', description: '' });
   const [message, setMessage] = useState('');
+  const location = useLocation();
 
   const favoriteCategory = useMemo(() => {
     const counts = transactions.reduce((acc, tx) => {
@@ -24,6 +26,13 @@ export default function Services() {
     setMessage(res.message);
   };
 
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.querySelector(location.hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location.hash]);
+
   const personalizedText = favoriteCategory
     ? `Você tem usado muito ${favoriteCategory}. Experimente testar cashback, seguro ou empréstimo e veja o impacto no saldo simulado.`
     : 'Escolha um serviço para testar personalização e incentivos de engajamento.';
@@ -38,8 +47,8 @@ export default function Services() {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <div className="card p-5 space-y-3">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        <div id="cashback" className="card p-5 space-y-3 scroll-mt-20">
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Compras com cashback</p>
             <h3 className="text-lg font-semibold text-ink">Ganhe 5% de volta</h3>
@@ -74,7 +83,7 @@ export default function Services() {
           </button>
         </div>
 
-        <div className="card p-5 space-y-3">
+        <div id="seguro" className="card p-5 space-y-3 scroll-mt-20">
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Seguro</p>
             <h3 className="text-lg font-semibold text-ink">Proteção rápida</h3>
@@ -109,7 +118,7 @@ export default function Services() {
           </button>
         </div>
 
-        <div className="card p-5 space-y-3">
+        <div id="emprestimo" className="card p-5 space-y-3 scroll-mt-20">
           <div>
             <p className="text-xs text-soft uppercase tracking-wide">Empréstimo</p>
             <h3 className="text-lg font-semibold text-ink">Saldo imediato</h3>
