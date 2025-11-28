@@ -1,4 +1,4 @@
-const { listTransactions, summary, categoryRules } = require('../services/transactionsService');
+const { listTransactions, summary, categoryRules, contestTransaction } = require('../services/transactionsService');
 
 async function getTransactions(req, res) {
   try {
@@ -18,4 +18,14 @@ async function getSummary(req, res) {
   }
 }
 
-module.exports = { getTransactions, getSummary };
+async function contest(req, res) {
+  try {
+    const { id } = req.params;
+    await contestTransaction(id);
+    res.json({ message: 'Contestação registrada e enviada para análise.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro ao contestar transação', error: error.message });
+  }
+}
+
+module.exports = { getTransactions, getSummary, contest };

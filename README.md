@@ -16,9 +16,10 @@ Aplicação full-stack (frontend Vite + React + Tailwind, backend Node.js + Expr
 Credenciais simuladas de login: **flux / 123456**.
 
 ## Funcionalidades
-- PIX (enviar/receber) com comprovante fake e registro no extrato.
-- Pagamento de contas e recarga de celular com lançamentos categorizados.
-- Extrato inteligente com cores/ícones e gráfico por categoria.
+- PIX (envio com QR simulado) com comprovante fake, contestação rápida e registro no extrato.
+- Pagamento de contas, recarga de celular e serviços (cashback, seguro e empréstimo) com lançamentos categorizados.
+- Extrato inteligente com cores/ícones e gráfico por categoria, incluindo marcação de contestação.
+- Campos monetários com máscara automática (vírgula fixa para centavos) para evitar erros de digitação.
 - UI inspirada na paleta Claro (vermelho #ED1C24) mantendo a identidade Flux.
 
 Para diagramas e detalhes, veja `docs/architecture.md`.

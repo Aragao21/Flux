@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import useFluxStore from '../store/useFluxStore';
+import CurrencyInput, { parseCurrencyToNumber } from '../components/CurrencyInput';
 
 export default function Payments() {
   const { post, loading } = useFluxStore();
-  const [form, setForm] = useState({ amount: '', barcode: '', description: '' });
+  const [form, setForm] = useState({ amount: '0,00', barcode: '', description: '' });
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await post('/payments', form);
+    const numericAmount = parseCurrencyToNumber(form.amount);
+    const res = await post('/payments', { ...form, amount: numericAmount });
     setMessage(res.message);
   };
 
@@ -22,11 +24,13 @@ export default function Payments() {
           <label className="text-sm text-soft">Código de barras</label>
           <input name="barcode" className="input-base mt-1" value={form.barcode} onChange={handleChange} />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm text-soft">Valor</label>
-            <input name="amount" className="input-base mt-1" value={form.amount} onChange={handleChange} />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CurrencyInput
+            label="Valor"
+            name="amount"
+            value={form.amount}
+            onValueChange={(val) => setForm({ ...form, amount: val })}
+          />
           <div>
             <label className="text-sm text-soft">Descrição</label>
             <input name="description" className="input-base mt-1" value={form.description} onChange={handleChange} />
@@ -35,7 +39,11 @@ export default function Payments() {
         <button className="button-primary" disabled={loading}>
           {loading ? 'Processando...' : 'Pagar boleto'}
         </button>
-        {message && <p className="text-sm text-green-700">{message}</p>}
+        {message && (
+          <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3" role="alert">
+            {message}
+          </div>
+        )}
         <p className="text-xs text-soft">Lançamento classificado automaticamente como "Contas".</p>
       </form>
       <div className="card p-6 bg-ink text-white space-y-3">

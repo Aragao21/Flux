@@ -30,9 +30,18 @@ db.serialize(() => {
       party TEXT,
       description TEXT,
       category TEXT NOT NULL,
+      contested INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  db.all("PRAGMA table_info('transactions')", (err, rows) => {
+    if (err) return;
+    const hasContested = rows.some((r) => r.name === 'contested');
+    if (!hasContested) {
+      db.run('ALTER TABLE transactions ADD COLUMN contested INTEGER DEFAULT 0');
+    }
+  });
 
   db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
     if (err) return;
